@@ -20,12 +20,12 @@ class DatabaseHelper {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'student.db');
 
-    // DELETE the existing database file for a fresh start during development
-    await deleteDatabase(path);  // This line forces database recreation
+    
+    await deleteDatabase(path);  
 
     return await openDatabase(
       path,
-      version: 2, // Set the correct version number for schema changes
+      version: 1, 
       onCreate: (db, version) async {
         await _createDb(db);
       },
