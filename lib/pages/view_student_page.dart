@@ -59,8 +59,9 @@ class _ViewStudentsPageState extends State<ViewStudentsPage> {
         itemBuilder: (context, index) {
           final student = students[index];
           return ListTile(
-            title: Text(student.name),
-            subtitle: Text(student.email),
+            title: Text(student.studentId),
+
+            subtitle: Text(student.name),
             trailing: IconButton(
               icon: Icon(Icons.delete, color: const Color.fromARGB(255, 123, 11, 3)),
               onPressed: () => _deleteStudent(student.id!),
