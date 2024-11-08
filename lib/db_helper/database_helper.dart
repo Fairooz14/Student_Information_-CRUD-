@@ -4,39 +4,43 @@ import '../models/student.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
-  factory DatabaseHelper() => _instance;
   static Database? _database;
 
   DatabaseHelper._internal();
 
+  factory DatabaseHelper() => _instance;
+
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await _initDB('student.db');
+    _database = await _initDatabase();
     return _database!;
   }
 
-  Future<Database> _initDB(String filePath) async {
+  Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
-    final path = join(dbPath, filePath);
+    final path = join(dbPath, 'student.db');
 
-    return await openDatabase(path, version: 1, onCreate: _onCreate);
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: (db, version) async {
+        await db.execute('''
+          CREATE TABLE students (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            studentId TEXT,
+            name TEXT,
+            phone TEXT,
+            email TEXT,
+            location TEXT
+          )
+        ''');
+      },
+    );
   }
 
-  Future<void> _onCreate(Database db, int version) async {
-    await db.execute('''
-      CREATE TABLE students(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        phone TEXT,
-        email TEXT,
-        location TEXT
-      )
-    ''');
-  }
-
-  Future<int> addStudent(Student student) async {
+  Future<void> insertStudent(Student student) async {
     final db = await database;
-    return await db.insert('students', student.toMap());
+    await db.insert('students', student.toMap());
   }
 
   Future<List<Student>> fetchStudents() async {
@@ -45,9 +49,9 @@ class DatabaseHelper {
     return List.generate(maps.length, (i) => Student.fromMap(maps[i]));
   }
 
-  Future<int> updateStudent(Student student) async {
+  Future<void> updateStudent(Student student) async {
     final db = await database;
-    return await db.update(
+    await db.update(
       'students',
       student.toMap(),
       where: 'id = ?',
@@ -55,12 +59,8 @@ class DatabaseHelper {
     );
   }
 
-  Future<int> deleteStudent(int id) async {
+  Future<void> deleteStudent(int id) async {
     final db = await database;
-    return await db.delete(
-      'students',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    await db.delete('students', where: 'id = ?', whereArgs: [id]);
   }
 }

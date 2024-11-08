@@ -5,6 +5,7 @@ import '../models/student.dart';
 class AddStudentPage extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
+  final _studentIdController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   final _locationController = TextEditingController();
@@ -39,6 +40,15 @@ class AddStudentPage extends StatelessWidget {
                     return null;
                   }),
               TextFormField(
+                  controller: _studentIdController,
+                  decoration: InputDecoration(labelText: 'Student ID'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your Student Id';
+                    }
+                    return null;
+                  }),
+              TextFormField(
                   controller: _phoneController,
                   decoration: InputDecoration(labelText: 'Phone'),
                   validator: (value) {
@@ -55,8 +65,7 @@ class AddStudentPage extends StatelessWidget {
                       return 'Please enter your email';
                     }
                     return null;
-                  }
-                  ),
+                  }),
               TextFormField(
                   controller: _locationController,
                   decoration: InputDecoration(labelText: 'Location'),
@@ -79,15 +88,19 @@ class AddStudentPage extends StatelessWidget {
                     if (_formKey.currentState!.validate()) {
                       final student = Student(
                         name: _nameController.text,
+                        studentId: _studentIdController.text,
                         phone: _phoneController.text,
                         email: _emailController.text,
                         location: _locationController.text,
                       );
-                      await DatabaseHelper().addStudent(student);
+                      await DatabaseHelper().insertStudent(student);
                       Navigator.pop(context);
                     }
                   },
-                  child: Text('Save', style: TextStyle(fontSize: 20),),
+                  child: Text(
+                    'Save',
+                    style: TextStyle(fontSize: 20),
+                  ),
                 ),
               ),
             ],
