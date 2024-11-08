@@ -53,7 +53,7 @@ class _AddStudentPageState extends State<AddStudentPage> {
                 Navigator.pop(context);
               },
             ),
-            Text('All Students',
+            Text('Add Student Information',
                 style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
