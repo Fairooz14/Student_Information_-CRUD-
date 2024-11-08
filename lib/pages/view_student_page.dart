@@ -3,7 +3,6 @@ import 'package:student_info_crud/db_helper/database_helper.dart';
 import 'package:student_info_crud/pages/student_detail_page.dart';
 import '../models/student.dart';
 
-
 class ViewStudentsPage extends StatefulWidget {
   @override
   _ViewStudentsPageState createState() => _ViewStudentsPageState();
@@ -18,16 +17,29 @@ class _ViewStudentsPageState extends State<ViewStudentsPage> {
     _loadStudents();
   }
 
+  // Load students from database
   void _loadStudents() async {
-    final data = await DatabaseHelper().fetchStudents();
-    setState(() => students = data);
+    try {
+      final data = await DatabaseHelper().fetchStudents();
+      print('Loaded students: $data'); // Debug print to check data loading
+      setState(() => students = data);
+    } catch (e) {
+      print('Error loading students: $e'); // Print any error that occurs
+    }
   }
 
+  // Delete student from database
   void _deleteStudent(int id) async {
-    await DatabaseHelper().deleteStudent(id);
-    _loadStudents();
+    try {
+      await DatabaseHelper().deleteStudent(id);
+      print('Deleted student with ID: $id'); // Debug print for deletion
+      _loadStudents(); // Reload the list after deletion
+    } catch (e) {
+      print('Error deleting student: $e'); // Handle any deletion errors
+    }
   }
 
+  // Navigate to student detail page
   Future<void> _navigateToStudentDetail(Student student) async {
     final bool? isDeleted = await Navigator.push(
       context,
@@ -37,39 +49,69 @@ class _ViewStudentsPageState extends State<ViewStudentsPage> {
     );
 
     if (isDeleted == true) {
-      _loadStudents();
+      _loadStudents(); // Reload list if a student was deleted in detail page
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 222, 182, 241),
-      appBar: AppBar(backgroundColor: const Color.fromARGB(255, 222, 182, 241),
-          title: Center(
-              child: Text(
-            'All Students',
-            style: TextStyle(
-              fontSize: 20,
-              color: const Color.fromARGB(255, 74, 3, 87),
+      backgroundColor: const Color.fromARGB(255, 227, 215, 198),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: const Color.fromARGB(255, 227, 215, 198),
+        title: Row(
+          children: [
+            IconButton(
+              icon: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: const Color.fromARGB(255, 74, 3, 87),
+                size: 30,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
-          ))),
-      body: ListView.builder(
-        itemCount: students.length,
-        itemBuilder: (context, index) {
-          final student = students[index];
-          return ListTile(
-            title: Text(student.studentId),
-
-            subtitle: Text(student.name),
-            trailing: IconButton(
-              icon: Icon(Icons.delete, color: const Color.fromARGB(255, 123, 11, 3)),
-              onPressed: () => _deleteStudent(student.id!),
-            ),
-            onTap: () => _navigateToStudentDetail(student),
-          );
-        },
+            Text('All Students',
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: const Color.fromARGB(255, 74, 3, 87))),
+          ],
+        ),
       ),
+      body: students.isEmpty
+          ? Center(
+              child: Text(
+                'No students found.',
+                style: TextStyle(color: const Color.fromARGB(255, 74, 3, 87), fontSize: 18),
+              ),
+            )
+          : ListView.builder(
+              itemCount: students.length,
+              itemBuilder: (context, index) {
+                final student = students[index];
+                return ListTile(
+                  title: Text(student.studentId ?? 'Unknown ID'), // Added null check
+                  subtitle: Text(student.name ?? 'Unknown Name'), // Added null check
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete, color: const Color.fromARGB(255, 182, 51, 42)),
+                    onPressed: () {
+                      if (student.id != null) {
+                        _deleteStudent(student.id!);
+                      } else {
+                        print('Error: student ID is null');
+                      }
+                    },
+                  ),
+                  onTap: () => _navigateToStudentDetail(student),
+                );
+                
+              },
+            ),
+            
     );
   }
 }
+
+

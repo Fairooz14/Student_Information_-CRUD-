@@ -6,12 +6,12 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 222, 182, 241),
+      backgroundColor: const Color.fromARGB(255, 227, 215, 198),
       appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 222, 182, 241),
+          backgroundColor: const Color.fromARGB(255, 227, 215, 198),
           title: Center(
               child: Text(
-            'Student Info',
+            'Student Informtaion Dept of CSE',
             style: TextStyle(
               fontSize: 20,
               color: const Color.fromARGB(255, 74, 3, 87),
@@ -21,7 +21,25 @@ class HomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            
+            Container(
+              height: 300,
+              width: 400,
+              decoration: BoxDecoration(
+                // color: const Color.fromARGB(255, 74, 3, 87),
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                  image: AssetImage('assests/images/campus.png'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            Text('International University',
+                style: TextStyle(
+                  fontSize: 24,
+                  color: const Color.fromARGB(255, 74, 3, 87),
+                )),
+            SizedBox(height: 50),
             Container(
               height: 50,
               width: 200,
@@ -54,7 +72,6 @@ class HomePage extends StatelessWidget {
               width: 200,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  
                   backgroundColor: const Color.fromARGB(255, 74, 3, 87),
                   foregroundColor: Colors.white,
                 ),

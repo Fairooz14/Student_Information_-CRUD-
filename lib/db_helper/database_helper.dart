@@ -20,35 +20,60 @@ class DatabaseHelper {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'student.db');
 
+    // DELETE the existing database file for a fresh start during development
+    await deleteDatabase(path);  // This line forces database recreation
+
     return await openDatabase(
       path,
-      version: 1,
+      version: 2, // Set the correct version number for schema changes
       onCreate: (db, version) async {
-        await db.execute('''
-          CREATE TABLE students (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            studentId TEXT,
-            name TEXT,
-            phone TEXT,
-            email TEXT,
-            location TEXT
-          )
-        ''');
+        await _createDb(db);
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute('ALTER TABLE students ADD COLUMN studentId TEXT');
+        }
       },
     );
   }
 
-  Future<void> insertStudent(Student student) async {
-    final db = await database;
-    await db.insert('students', student.toMap());
+  // Method to create the initial database schema
+  Future<void> _createDb(Database db) async {
+    await db.execute('''
+      CREATE TABLE students (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        studentId TEXT,
+        name TEXT,
+        phone TEXT,
+        email TEXT,
+        location TEXT
+      )
+    ''');
+    print("Database created with the correct schema.");
   }
 
+  // Insert Student with try-catch and returning inserted row ID
+  Future<int> insertStudent(Student student) async {
+    try {
+      final db = await database;
+      int id = await db.insert('students', student.toMap());
+      print('Student inserted with ID: $id');
+      return id;
+    } catch (e) {
+      print('Error inserting student: $e');
+      return -1;
+    }
+  }
+
+  // Fetch students method
   Future<List<Student>> fetchStudents() async {
     final db = await database;
     final maps = await db.query('students');
+    print('Fetched students: $maps');
     return List.generate(maps.length, (i) => Student.fromMap(maps[i]));
   }
 
+  // Update student method
   Future<void> updateStudent(Student student) async {
     final db = await database;
     await db.update(
@@ -57,10 +82,13 @@ class DatabaseHelper {
       where: 'id = ?',
       whereArgs: [student.id],
     );
+    print('Student with ID ${student.id} updated');
   }
 
+  // Delete student method
   Future<void> deleteStudent(int id) async {
     final db = await database;
     await db.delete('students', where: 'id = ?', whereArgs: [id]);
+    print('Student with ID $id deleted');
   }
 }

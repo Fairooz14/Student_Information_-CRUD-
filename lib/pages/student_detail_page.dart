@@ -51,8 +51,29 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 227, 215, 198),
       appBar: AppBar(
-        title: Text("Student Details"),
+        automaticallyImplyLeading: false,
+        backgroundColor: const Color.fromARGB(255, 227, 215, 198),
+        title: Row(
+          children: [
+            IconButton(
+              icon: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: const Color.fromARGB(255, 74, 3, 87),
+                size: 30,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            Text('Student Detail',
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: const Color.fromARGB(255, 74, 3, 87))),
+          ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -64,7 +85,7 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
               decoration: InputDecoration(labelText: 'Name'),
             ),
             TextField(
-              controller: _nameController,
+              controller: _studentIdController,
               decoration: InputDecoration(labelText: 'Student ID'),
             ),
             TextField(
@@ -85,11 +106,12 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
               children: [
                 ElevatedButton(
                   onPressed: _updateStudent,
-                  child: Text('Update'),
+                  child: Text('Update', style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(backgroundColor: const Color.fromARGB(255, 20, 118, 37)),
                 ),
                 ElevatedButton(
                   onPressed: _deleteStudent,
-                  child: Text('Delete'),
+                  child: Text('Delete', style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 ),
               ],
